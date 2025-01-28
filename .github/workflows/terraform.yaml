@@ -27,7 +27,7 @@ jobs:
       id: aws-credentials
       uses: aws-actions/configure-aws-credentials@v4
       with:
-        aws-region:${{ secrets.AWS_REGION }}   # AWS region from secrets
+        aws-region:    ${{ secrets.AWS_REGION }}   # AWS region from secrets
         role-to-assume: ${{ secrets.AWS_ROLE_ARN }}# ARN of the role to assume
         role-session-name: TerraformSession
         audience: sts.amazonaws.com
