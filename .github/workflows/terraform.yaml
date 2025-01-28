@@ -15,6 +15,19 @@ jobs:
     # Step 1: Checkout Repository
     - name: Checkout Repository
       uses: actions/checkout@v3
+    
+          # Find Terraform Directory
+    - name: Find Terraform Directory
+      id: find-terraform
+      run: |
+          if [ -d "AWS_STS/terraform" ]; then
+            echo "terraform_dir=AWS_STS/terraform" >> $GITHUB_ENV
+          elif [ -d "terraform" ]; then
+            echo "terraform_dir=terraform" >> $GITHUB_ENV
+          else
+            echo "Terraform directory not found!"
+            exit 1
+          fi
 
     # Step 2: Set up Terraform
     - name: Set up Terraform
