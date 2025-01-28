@@ -1,0 +1,47 @@
+
+
+---
+
+#### **.gitignore**
+Here’s a `.gitignore` file tailored for this project:
+
+```plaintext
+# Terraform
+*.tfstate
+*.tfstate.backup
+.terraform/
+.terraform.lock.hcl
+
+# Kubernetes
+*.yaml.log
+
+# Python
+*.pyc
+__pycache__/
+
+# Docker
+*.env
+.dockerignore
+docker-compose.override.yml
+
+# Node Modules
+node_modules/
+
+# Logs
+*.log
+
+# Secrets
+secrets.json
+*.pem
+*.key
+
+# AWS Credentials
+.aws/
+credentials
+
+# GitHub Actions
+.github/workflows/*.log
+
+# General
+.DS_Store
+*.swp
