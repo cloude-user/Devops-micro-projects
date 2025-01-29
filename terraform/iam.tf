@@ -51,36 +51,3 @@ resource "aws_s3_bucket_policy" "secure_policy" {
 }
 POLICY
 }
-
-
-# IAM Policy for Terraform Role to Manage S3
-resource "aws_iam_policy" "terraform_s3_access" {
-  name        = "TerraformS3Access"
-  description = "Policy for Terraform execution role to manage S3 bucket"
-  
-  policy = jsonencode({
-    Version = "2012-10-17",
-    Statement = [
-      {
-        Effect   = "Allow",
-        Action   = [
-          "s3:GetBucketPolicy",
-          "s3:PutBucketPolicy",
-          "s3:GetObject",
-          "s3:PutObject",
-          "s3:ListBucket"
-        ],
-        Resource = [
-          "arn:aws:s3:::my-secure-bucket-001",
-          "arn:aws:s3:::my-secure-bucket-001/*"
-        ]
-      }
-    ]
-  })
-}
-
-# Attach the IAM Policy to Terraform Role
-resource "aws_iam_role_policy_attachment" "terraform_s3_attach" {
-  role       = "sundeep"  # Only "sundeep", not "sundeep/TerraformSession"
-  policy_arn = aws_iam_policy.terraform_s3_access.arn
-}
