@@ -1,9 +1,8 @@
-variable "instance_name" {
+variable "region" {
   type = string
-  default = "ec2-user-001"
+  default = "us-east-2"
 }
-
-variable "ec2_ami" {
+variable "env" {
   type = string
-  default = "ami-0eb070c40e6a142a3"
+  default = "PERSONAL"
 }
