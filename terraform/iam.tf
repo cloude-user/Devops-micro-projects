@@ -5,17 +5,16 @@ provider "aws" {
 resource "aws_s3_bucket" "secure_bucket" {
   bucket = "my-secure-bucket-002"
 }
-
 resource "aws_s3_bucket_policy" "secure_bucket_policy" {
   bucket = aws_s3_bucket.secure_bucket.id
   policy = jsonencode({
     Version = "2012-10-17",
     Statement = [
-      # ✅ Allow GitHub Actions OIDC Role to access S3
+      # ✅ Allow TerraformSession role to access S3
       {
         Effect = "Allow",
         Principal = {
-          "AWS": "arn:aws:iam::692859915147:role/sundeep"
+          "AWS": "arn:aws:iam::692859915147:role/sundeep/TerraformSession"
         },
         Action = [
           "s3:GetBucketPolicy",
@@ -23,6 +22,18 @@ resource "aws_s3_bucket_policy" "secure_bucket_policy" {
           "s3:GetObject",
           "s3:ListBucket"
         ],
+        Resource = [
+          "arn:aws:s3:::${aws_s3_bucket.secure_bucket.id}",
+          "arn:aws:s3:::${aws_s3_bucket.secure_bucket.id}/*"
+        ]
+      },
+      # ✅ Allow GitHub Actions OIDC Role to access S3
+      {
+        Effect = "Allow",
+        Principal = {
+          "AWS": "arn:aws:iam::692859915147:role/sundeep"
+        },
+        Action = "s3:*",
         Resource = [
           "arn:aws:s3:::${aws_s3_bucket.secure_bucket.id}",
           "arn:aws:s3:::${aws_s3_bucket.secure_bucket.id}/*"
@@ -49,4 +60,3 @@ resource "aws_s3_bucket_policy" "secure_bucket_policy" {
     ]
   })
 }
-
