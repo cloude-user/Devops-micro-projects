@@ -26,7 +26,7 @@ resource "aws_iam_policy" "ec2_access_policy" {
         Resource = "*"
         Condition = {
           StringEquals = {
-            "ec2:InstanceType" = "t2.*"
+            "ec2:InstanceType" = "t2."
           }
         }
       }
