@@ -24,8 +24,8 @@ resource "aws_s3_bucket_policy" "restricted_ip_policy" {
             "Principal": "*",
             "Action": "s3:*",
             "Resource": [
-                "arn:aws:s3:::my-secure-bucket",
-                "arn:aws:s3:::my-secure-bucket/*"
+                "arn:aws:s3:::my-secure-bucket-001",
+                "arn:aws:s3:::my-secure-bucket-001/*"
             ],
             "Condition": {
                 "NotIpAddress": {
