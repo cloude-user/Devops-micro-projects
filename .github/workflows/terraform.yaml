@@ -40,8 +40,8 @@ jobs:
       id: aws-credentials
       uses: aws-actions/configure-aws-credentials@v4
       with:
-        aws-region: us-east-2   # AWS region from secrets
-        role-to-assume: arn:aws:iam::692859915147:role/sundeep # ARN of the role to assume
+        aws-region:  ${{ secrets.AWS_REGION }}  #us-east-2   # AWS region from secrets
+        role-to-assume: ${{ secrets.AWS_ROLE_ARN }} #arn:aws:iam::692859915147:role/sundeep # ARN of the role to assume
         role-session-name: TerraformSession
         audience: sts.amazonaws.com
 
