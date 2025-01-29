@@ -46,28 +46,12 @@ resource "aws_s3_bucket_policy" "secure_policy" {
         "arn:aws:s3:::my-secure-bucket-001",
         "arn:aws:s3:::my-secure-bucket-001/*"
       ]
-    },
-    {
-      "Effect": "Deny",
-      "Principal": "*",
-      "Action": "s3:*",
-      "Resource": [
-        "arn:aws:s3:::my-secure-bucket-001",
-        "arn:aws:s3:::my-secure-bucket-001/*"
-      ],
-      "Condition": {
-        "NotIpAddress": {
-          "aws:SourceIp": ["203.0.113.0/24", "198.51.100.50"]
-        },
-        "StringNotEqualsIfExists": {
-          "aws:PrincipalArn": "arn:aws:iam::692859915147:role/sundeep/TerraformSession"
-        }
-      }
     }
   ]
 }
 POLICY
 }
+
 
 # IAM Policy for Terraform Role to Manage S3
 resource "aws_iam_policy" "terraform_s3_access" {
