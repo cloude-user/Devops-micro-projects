@@ -1,40 +1,39 @@
-resource "aws_iam_policy" "restrict_to_t2_instances" {
-  name        = "RestrictToT2Instances"
-  description = "Policy to restrict EC2 instance creation to only t2 instance types"
-
-  policy = jsonencode({
-    Version = "2012-10-17"
+resource "aws_iam_policy" "ec2_access_policy" {
+  name        = "EC2AccessPolicy"
+  description = "Policy to allow EC2 instance creation and management"
+  policy      = jsonencode({
+    Version = "2012-10-17",
     Statement = [
+      {
+        Effect   = "Allow"
+        Action   = [
+          "ec2:RunInstances",
+          "ec2:DescribeInstances",
+          "ec2:TerminateInstances",
+          "ec2:StartInstances",
+          "ec2:StopInstances",
+          "ec2:RebootInstances",
+          "ec2:DescribeInstanceStatus",
+          "ec2:DescribeInstances"
+        ]
+        Resource = "*"
+      },
+      # Optional: If you want to restrict the user to specific instance types (e.g., t2 instances)
       {
         Effect   = "Allow"
         Action   = "ec2:RunInstances"
         Resource = "*"
         Condition = {
-          StringLike = {
-            "ec2:InstanceType" = [
-              "t2.*"  # This will match any t2 instance (t2.micro, t2.small, etc.)
-            ]
-          }
-        }
-      },
-      {
-        Effect   = "Deny"
-        Action   = "ec2:RunInstances"
-        Resource = "*"
-        Condition = {
-          StringNotLike = {
-            "ec2:InstanceType" = [
-              "t2.*"  # Deny all other instances that are not t2.*
-            ]
+          StringEquals = {
+            "ec2:InstanceType" = "t2.*"
           }
         }
       }
     ]
   })
 }
-
 resource "aws_iam_policy_attachment" "specif_instance_policy" {
-  policy_arn = aws_iam_policy.restrict_to_t2_instances.arn
+  policy_arn = aws_iam_policy.ec2_access_policy.arn
   roles      = ["sundeep"]
   name       = "siuu"
 }
@@ -42,6 +41,6 @@ resource "aws_iam_policy_attachment" "specif_instance_policy" {
 
 resource "aws_iam_user_policy_attachment" "user_policy_attachment" {
   user       = "Developer_01"  # Replace with your IAM user's name
-  policy_arn = aws_iam_policy.restrict_to_t2_instances.arn
+  policy_arn = aws_iam_policy.ec2_access_policy.arn
 }
 
