@@ -2,52 +2,44 @@ provider "aws" {
   region = var.region
 }
 
-# Create the S3 Bucket
 resource "aws_s3_bucket" "secure_bucket" {
-  bucket = "my-secure-bucket-001"
-
-  tags = {
-    Name        = "Secure S3 Bucket"
-    Environment = var.env
-  }
+  bucket = "my-secure-bucket-002"
 }
-
-# Enforce Encryption at Rest
-resource "aws_s3_bucket_server_side_encryption_configuration" "s3_encryption" {
+resource "aws_s3_bucket_policy" "secure_bucket_policy" {
   bucket = aws_s3_bucket.secure_bucket.id
-
-  rule {
-    apply_server_side_encryption_by_default {
-      sse_algorithm = "AES256"
-    }
-  }
-}
-
-# Restrict Access to Specific IPs with Exception for Terraform Role
-resource "aws_s3_bucket_policy" "secure_policy" {
-  bucket = aws_s3_bucket.secure_bucket.id
-  policy = <<POLICY
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Principal": {
-        "AWS": "arn:aws:iam::692859915147:role/sundeep/TerraformSession"
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      # Allow only specific IPs to access the bucket
+      {
+        Effect = "Deny",
+        Principal = "*",
+        Action = "s3:*",
+        Resource = [
+          "arn:aws:s3:::${aws_s3_bucket.secure_bucket.id}",
+          "arn:aws:s3:::${aws_s3_bucket.secure_bucket.id}/*"
+        ],
+        Condition = {
+          "NotIpAddress": {
+            "aws:SourceIp": [
+              "192.168.1.171",  # Specific IP
+              "10.0.0.0/8"       # Any IP starting from 10.*
+            ]
+          }
+        }
       },
-      "Action": [
-        "s3:GetBucketPolicy",
-        "s3:PutBucketPolicy",
-        "s3:GetObject",
-        "s3:PutObject",
-        "s3:ListBucket"
-      ],
-      "Resource": [
-        "arn:aws:s3:::my-secure-bucket-001",
-        "arn:aws:s3:::my-secure-bucket-001/*"
-      ]
-    }
-  ]
-}
-POLICY
+      # Allow OIDC GitHub Actions role to access the bucket
+      {
+        Effect = "Allow",
+        Principal = {
+          "AWS": "arn:aws:iam::692859915147:role/sundeep"
+        },
+        Action = "s3:*",
+        Resource = [
+          "arn:aws:s3:::${aws_s3_bucket.secure_bucket.id}",
+          "arn:aws:s3:::${aws_s3_bucket.secure_bucket.id}/*"
+        ]
+      }
+    ]
+  })
 }
