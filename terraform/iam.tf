@@ -14,7 +14,33 @@ resource "aws_s3_bucket" "restricted_bucket_001" {
 resource "aws_s3_bucket_policy" "restricted_ip_policy" {
   bucket = aws_s3_bucket.restricted_bucket_001.id
 
-  policy = <<POLICY
+#   policy = <<POLICY
+# {
+#     "Version": "2012-10-17",
+#     "Id": "IPRestrictPolicy",
+#     "Statement": [
+#         {
+#             "Effect": "Deny",
+#             "Principal": "*",
+#             "Action": "s3:*",
+#             "Resource": [
+#                 "arn:aws:s3:::my-secure-bucket-001",
+#                 "arn:aws:s3:::my-secure-bucket-001/*"
+#             ],
+#             "Condition": {
+#                 "NotIpAddress": {
+#                     "aws:SourceIp": [
+#                         "203.0.113.0/24",
+#                         "198.51.100.5",
+#                         "192.168.58.153"
+#                       ]
+#                 }
+#             }
+#         }
+#     ]
+# }
+# POLICY
+policy = <<POLICY
 {
     "Version": "2012-10-17",
     "Id": "IPRestrictPolicy",
@@ -24,8 +50,8 @@ resource "aws_s3_bucket_policy" "restricted_ip_policy" {
             "Principal": "*",
             "Action": "s3:*",
             "Resource": [
-                "arn:aws:s3:::my-secure-bucket-001",
-                "arn:aws:s3:::my-secure-bucket-001/*"
+                "arn:aws:s3:::my-secure-bucket",
+                "arn:aws:s3:::my-secure-bucket/*"
             ],
             "Condition": {
                 "NotIpAddress": {
@@ -33,7 +59,7 @@ resource "aws_s3_bucket_policy" "restricted_ip_policy" {
                         "203.0.113.0/24",
                         "198.51.100.5",
                         "192.168.58.153"
-                      ]
+                    ]
                 }
             }
         }
@@ -41,3 +67,4 @@ resource "aws_s3_bucket_policy" "restricted_ip_policy" {
 }
 POLICY
 }
+
