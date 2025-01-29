@@ -39,7 +39,7 @@ resource "aws_s3_bucket_policy" "secure_bucket_policy" {
           "arn:aws:s3:::${aws_s3_bucket.secure_bucket.id}/*"
         ]
       },
-      # ❌ Deny all access except specific IPs
+      # ❌ Deny all access except specific IPs.
       {
         Effect = "Deny",
         Principal = "*",
