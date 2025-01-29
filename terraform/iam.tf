@@ -101,20 +101,6 @@ resource "aws_s3_bucket_policy" "secure_policy" {
   "Version": "2012-10-17",
   "Statement": [
     {
-      "Effect": "Deny",
-      "Principal": "*",
-      "Action": "s3:*",
-      "Resource": [
-        "arn:aws:s3:::my-secure-bucket-001",
-        "arn:aws:s3:::my-secure-bucket-001/*"
-      ],
-      "Condition": {
-        "NotIpAddress": {
-          "aws:SourceIp": ["203.0.113.0/24", "198.51.100.50", "192.168.58.153"]
-        }
-      }
-    },
-    {
       "Effect": "Allow",
       "Principal": {
         "AWS": "arn:aws:iam::692859915147:role/sundeep/TerraformSession"
@@ -130,11 +116,26 @@ resource "aws_s3_bucket_policy" "secure_policy" {
         "arn:aws:s3:::my-secure-bucket-001",
         "arn:aws:s3:::my-secure-bucket-001/*"
       ]
+    },
+    {
+      "Effect": "Deny",
+      "Principal": "*",
+      "Action": "s3:*",
+      "Resource": [
+        "arn:aws:s3:::my-secure-bucket-001",
+        "arn:aws:s3:::my-secure-bucket-001/*"
+      ],
+      "Condition": {
+        "NotIpAddress": {
+          "aws:SourceIp": ["203.0.113.0/24", "198.51.100.50"]
+        }
+      }
     }
   ]
 }
 POLICY
 }
+
 
 # Attach an IAM Policy to the Terraform Role to Manage the Bucket
 resource "aws_iam_policy" "terraform_s3_access" {
@@ -167,4 +168,48 @@ resource "aws_iam_role_policy_attachment" "terraform_s3_attach" {
   role       = "sundeep/TerraformSession"
   policy_arn = aws_iam_policy.terraform_s3_access.arn
 }
+
+# # 
+# resource "aws_s3_bucket_policy" "secure_policy" {
+#   bucket = aws_s3_bucket.secure_bucket.id
+#   policy = <<POLICY
+# {
+#   "Version": "2012-10-17",
+#   "Statement": [
+#     {
+#       "Effect": "Allow",
+#       "Principal": {
+#         "AWS": "arn:aws:iam::692859915147:role/sundeep/TerraformSession"
+#       },
+#       "Action": [
+#         "s3:GetBucketPolicy",
+#         "s3:PutBucketPolicy",
+#         "s3:GetObject",
+#         "s3:PutObject",
+#         "s3:ListBucket"
+#       ],
+#       "Resource": [
+#         "arn:aws:s3:::my-secure-bucket-001",
+#         "arn:aws:s3:::my-secure-bucket-001/*"
+#       ]
+#     },
+#     {
+#       "Effect": "Deny",
+#       "Principal": "*",
+#       "Action": "s3:*",
+#       "Resource": [
+#         "arn:aws:s3:::my-secure-bucket-001",
+#         "arn:aws:s3:::my-secure-bucket-001/*"
+#       ],
+#       "Condition": {
+#         "NotIpAddress": {
+#           "aws:SourceIp": ["203.0.113.0/24", "198.51.100.50"]
+#         }
+#       }
+#     }
+#   ]
+# }
+# POLICY
+# }
+
 
