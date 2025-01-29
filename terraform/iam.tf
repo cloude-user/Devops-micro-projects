@@ -14,7 +14,8 @@ resource "aws_iam_policy" "ec2_access_policy" {
           "ec2:StopInstances",
           "ec2:RebootInstances",
           "ec2:DescribeInstanceStatus",
-          "ec2:DescribeInstances"
+          "ec2:DescribeInstances",
+          "ec2:GetAllowedImagesSettings"  # Added permission to get allowed images settings
         ]
         Resource = "*"
       },
