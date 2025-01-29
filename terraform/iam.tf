@@ -5,6 +5,7 @@ provider "aws" {
 resource "aws_s3_bucket" "secure_bucket" {
   bucket = "my-secure-bucket-002"
 }
+
 resource "aws_s3_bucket_policy" "secure_bucket_policy" {
   bucket = aws_s3_bucket.secure_bucket.id
   policy = jsonencode({
@@ -14,7 +15,7 @@ resource "aws_s3_bucket_policy" "secure_bucket_policy" {
       {
         Effect = "Allow",
         Principal = {
-          "AWS" : "arn:aws:iam::692859915147:role/sundeep"
+          "AWS": "arn:aws:iam::692859915147:role/sundeep"
         },
         Action = [
           "s3:GetBucketPolicy",
@@ -29,18 +30,18 @@ resource "aws_s3_bucket_policy" "secure_bucket_policy" {
       },
       # ❌ Deny all access except specific IPs
       {
-        Effect    = "Deny",
+        Effect = "Deny",
         Principal = "*",
-        Action    = "s3:*",
+        Action = "s3:*",
         Resource = [
           "arn:aws:s3:::${aws_s3_bucket.secure_bucket.id}",
           "arn:aws:s3:::${aws_s3_bucket.secure_bucket.id}/*"
         ],
         Condition = {
-          "NotIpAddress" : {
-            "aws:SourceIp" : [
-              "192.168.1.171", # Specific IP
-              "10.0.0.0/8"     # Any IP starting from 10.*
+          "NotIpAddress": {
+            "aws:SourceIp": [
+              "192.168.1.171",  # Specific IP
+              "10.0.0.0/8"       # Any IP starting from 10.*
             ]
           }
         }
@@ -48,3 +49,4 @@ resource "aws_s3_bucket_policy" "secure_bucket_policy" {
     ]
   })
 }
+
