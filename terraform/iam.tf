@@ -38,3 +38,10 @@ resource "aws_iam_policy_attachment" "specif_instance_policy" {
   roles      = ["sundeep"]
   name       = "siuu"
 }
+
+
+resource "aws_iam_user_policy_attachment" "user_policy_attachment" {
+  user       = "Developer_01"  # Replace with your IAM user's name
+  policy_arn = aws_iam_policy.restrict_to_t2_instances.arn
+}
+
