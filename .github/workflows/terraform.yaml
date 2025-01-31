@@ -3,8 +3,9 @@ name: Terraform CI/CD Pipeline
 on:
   pull_request:
     paths:
-      - '**/terraform/**'
+      - 'AWS_*/terraform/**'
     types: [opened, synchronize, reopened]
+
 jobs:
   terraform:
     runs-on: ubuntu-latest
@@ -16,45 +17,54 @@ jobs:
     - name: Checkout Repository
       uses: actions/checkout@v3
     
-          # Find Terraform Directory
+    # Step 2: Find Terraform Directory Dynamically
     - name: Find Terraform Directory
       id: find-terraform
       run: |
-          if [ -d "AWS_STS/terraform" ]; then
-            echo "terraform_dir=AWS_STS/terraform" >> $GITHUB_ENV
-          elif [ -d "terraform" ]; then
-            echo "terraform_dir=terraform" >> $GITHUB_ENV
-          else
-            echo "Terraform directory not found!"
-            exit 1
-          fi
+        TERRAFORM_DIR=$(find . -type d -path "./AWS_*/terraform" | head -n 1)
+        if [ -z "$TERRAFORM_DIR" ]; then
+          echo "Terraform directory not found!"
+          exit 1
+        fi
+        echo "terraform_dir=$TERRAFORM_DIR" >> $GITHUB_ENV
 
-    # Step 2: Set up Terraform
+    # Step 3: Set up Terraform
     - name: Set up Terraform
       uses: hashicorp/setup-terraform@v2
       with:
         terraform_version: 1.5.0
 
-    # Step 3: Configure AWS Credentials
+    # Step 4: Configure AWS Credentials
     - name: Configure AWS Credentials
       id: aws-credentials
       uses: aws-actions/configure-aws-credentials@v4
       with:
-        aws-region:  ${{ secrets.AWS_REGION }}  #us-east-2   # AWS region from secrets
-        role-to-assume: ${{ secrets.AWS_ROLE_ARN }} #arn:aws:iam::692859915147:role/sundeep # ARN of the role to assume
+        aws-region: ${{ secrets.AWS_REGION }}    # AWS region from secrets
+        role-to-assume: ${{ secrets.AWS_ROLE_ARN }} # ARN of the role to assume
         role-session-name: TerraformSession
         audience: sts.amazonaws.com
 
-    # Step 4: Verify AWS Credentials
+    # Step 5: Verify AWS Credentials
     - name: Verify AWS Credentials
       run: aws sts get-caller-identity
 
-    # Step 5: Initialize Terraform
+    # Step 6: Initialize Terraform
     - name: Terraform Init
       run: terraform init
-      working-directory: terraform
+      working-directory: ${{ env.terraform_dir }}
 
-    # Step 6: Apply Terraform Changes
+    # Step 7: Validate Terraform Configuration
+    - name: Terraform Validate
+      run: terraform validate
+      working-directory: ${{ env.terraform_dir }}
+
+    # Step 8: Terraform Plan
+    - name: Terraform Plan
+      run: terraform plan
+      working-directory: ${{ env.terraform_dir }}
+
+    # Step 9: Apply Terraform Changes (Only on Merge)
     - name: Terraform Apply
+      if: github.event_name == 'push'
       run: terraform apply -auto-approve
-      working-directory: terraform
+      working-directory: ${{ env.terraform_dir }}
