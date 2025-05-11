@@ -5,8 +5,8 @@ resource "aws_lambda_function" "lambda" {
   runtime       = "python3.12"
   timeout       = 10
 
-#   filename         = "lambda_function_payload.zip" # Should exist at runtime
-#   source_code_hash = filebase64sha256("lambda_function_payload.zip")
+  filename         = "../src/app.zip" # Should exist at runtime
+  source_code_hash = filebase64sha256("../src/app.zip")
 
   environment {
     variables = {
