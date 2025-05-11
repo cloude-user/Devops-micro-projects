@@ -140,6 +140,6 @@ jobs:
 
       # Step 9: Terraform Apply (only on push to main)
       - name: Terraform Apply
-        if: github.ref == 'refs/heads/main'
+        # if: github.ref == 'refs/heads/main'
         run: terraform apply -auto-approve tfplan
         working-directory: ${{ env.terraform_dir }}
