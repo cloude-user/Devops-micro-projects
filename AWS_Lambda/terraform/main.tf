@@ -1,4 +1,4 @@
-resource "aws_lambda_function" "lambda" {
+resource "aws_lambda_function" "sample_lambda" {
   function_name = var.lambda_function_name
   role          = aws_iam_role.lambda_exec_role.arn
   handler       = "lambda_function.lambda_handler"
@@ -13,4 +13,9 @@ resource "aws_lambda_function" "lambda" {
         "name"="siuu"
     }
   }
+}
+
+resource "aws_lambda_event_source_mapping" "lambda_evt_source_mapping" {
+  function_name = sample_lambda
+  
 }

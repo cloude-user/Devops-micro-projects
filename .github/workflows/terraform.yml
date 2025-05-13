@@ -67,6 +67,6 @@ jobs:
         working-directory: ${{ env.terraform_dir }}
 
       # Step 9: Terraform Apply (only on push to main)
-      - name: Terraform Apply
-        run: terraform apply -auto-approve tfplan
-        working-directory: ${{ env.terraform_dir }}
+      # - name: Terraform Apply
+      #   run: terraform apply -auto-approve tfplan
+      #   working-directory: ${{ env.terraform_dir }}
